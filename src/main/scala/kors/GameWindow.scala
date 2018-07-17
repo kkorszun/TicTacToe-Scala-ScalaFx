@@ -1,12 +1,15 @@
 package kors
 
 import javafx.scene.control.{Label, TitledPane}
+import kors.GameEngine.GameState._
 import kors.GameEngine.GameSymbol.{CircleS, CrossS, EmptyS, GameSymbol}
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
 import scalafx.geometry.Insets
 import scalafx.scene.Scene
-import scalafx.scene.control.Button
+import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.control.ButtonBar.ButtonData._
+import scalafx.scene.control.{Alert, Button}
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.layout.{ColumnConstraints, GridPane, HBox, VBox}
 import scalafx.scene.paint.Color._
@@ -16,7 +19,12 @@ import scalafx.scene.text.Text
 
 object GameWindow extends JFXApp {
 
-  val myGame = new GameEngine
+  var myGame = new GameEngine
+
+  def resetGame = {myGame = new GameEngine; setGameStateToGrid}
+
+  def closeGame = { stage.close }
+
 
   var titleText = new Text {
     text = "TicTacToe "
@@ -24,6 +32,19 @@ object GameWindow extends JFXApp {
     fill = new LinearGradient(
       endX = 0,
       stops = Stops(Gray, WhiteSmoke)
+    )
+  }
+
+  var footerWithBtts = new HBox{
+    children = Seq(
+      new Button{
+        text = "new game"
+        onAction = {_ => {myGame = new GameEngine; setGameStateToGrid}}
+      },
+      new Button{
+       text =  "exit"
+        onAction = {_ => stage.close()}
+      }
     )
   }
 
@@ -37,6 +58,9 @@ object GameWindow extends JFXApp {
     myGame.getGameBoard.flatten.zip(bttnArr).foreach(_ match{
       case (x,y) => {
         y.text.value_=  { this toStringSymbol x }
+        if(x == CrossS || x == CircleS) {
+          y.disable = true
+        } else y.disable = false
       }
     })
 
@@ -44,12 +68,40 @@ object GameWindow extends JFXApp {
 
 
 
+  def showAlert(x :GameState) = {
+
+    def myAlert(myMessage :String) = new Alert(AlertType.Confirmation) {
+      initOwner(stage)
+      title = "TicTacToe"
+      contentText = myMessage+"New game?"
+
+      //onHiding = { _ => {stage.close()}}
+    }.showAndWait() match {
+      case Some(x) => x.buttonData match {
+        case CancelClose => closeGame
+        case OKDone => resetGame
+      }
+    }
+
+    x match {
+      case Draw => myAlert("draw.")
+      case CrossV => myAlert("╳ wins. ")
+      case CircleV => myAlert("◯ wins. ")
+    }
+
+  }
+
+
   def getMyButton(c :Int,  r:Int) = new Button{
     text = " "
-    //◯
     onAction = { value => {
-      myGame.nextMove(c,r)
+      val result = myGame.nextMove(c,r)
       setGameStateToGrid
+      if(result._1 != NonV) {
+        bttnArr.foreach(_.disable = true)
+        showAlert(result._1)
+      }
+
     }
     }
   }
@@ -64,7 +116,7 @@ object GameWindow extends JFXApp {
   var btt32 = getMyButton(2,1)
   var btt33 = getMyButton(2,2)
 
-  val bttnArr = Array(
+  val bttnArr: Array[Button] = Array(
     btt11,btt12, btt13,
     btt21, btt22, btt23,
     btt31, btt32, btt33)
@@ -95,7 +147,8 @@ object GameWindow extends JFXApp {
       content = new VBox{
         children = Seq(
           new HBox(titleText),
-          gridPane
+          gridPane,
+          footerWithBtts
         )
       }
     }
