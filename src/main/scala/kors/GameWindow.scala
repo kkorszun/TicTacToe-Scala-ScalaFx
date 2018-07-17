@@ -28,7 +28,7 @@ object GameWindow extends JFXApp {
   }
 
   def toStringSymbol: GameSymbol => String = {
-    case EmptyS   =>  " "
+    case EmptyS   =>  "  "
     case CrossS   =>  "╳"
     case CircleS  =>  "◯"
   }
