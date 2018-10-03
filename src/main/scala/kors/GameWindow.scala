@@ -95,7 +95,7 @@ object GameWindow extends JFXApp {
 
   def getMyButton(c :Int,  r:Int) = new Button{
     text = " "
-    onAction = { value => {
+    onAction = { _ => {
       val result = myGame.nextMove(c,r)
       setGameStateToGrid
       if(result._1 != NonV) {
@@ -106,20 +106,11 @@ object GameWindow extends JFXApp {
   }
 
   def getButtonsArr = {
-    var btt11 = getMyButton(0,0)
-    var btt12 = getMyButton(0,1)
-    var btt13 = getMyButton(0,2)
-    var btt21 = getMyButton(1,0)
-    var btt22 = getMyButton(1,1)
-    var btt23 = getMyButton(1,2)
-    var btt31 = getMyButton(2,0)
-    var btt32 = getMyButton(2,1)
-    var btt33 = getMyButton(2,2)
-
-    Array(
-      Array(btt11,btt12, btt13),
-      Array(btt21, btt22, btt23),
-      Array(btt31, btt32, btt33))
+    myGame.getGameBoard.zipWithIndex.map({
+      case (s,j) => s.zipWithIndex.map({
+        case(_, i) => getMyButton(j,i)
+      })
+    })
   }
 
   var gridPane = new GridPane()
