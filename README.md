@@ -27,5 +27,5 @@ $ sbt run
 or
 ```sh
 $ sbt
-sbt:TicTacToeScala>> run
+sbt:TicTacToeScala> run
 ```
