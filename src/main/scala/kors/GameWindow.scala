@@ -2,15 +2,12 @@ package kors
 
 import javafx.scene.control.{Label, TitledPane}
 import kors.GameEngine.GameState._
-import kors.GameEngine.GameSymbol.{CircleS, CrossS, EmptyS, GameSymbol}
+import kors.GameEngine.GameSymbol._
 import scalafx.application.JFXApp
-import scalafx.application.JFXApp.PrimaryStage
-import scalafx.geometry.Insets
 import scalafx.scene.Scene
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.ButtonBar.ButtonData._
 import scalafx.scene.control.{Alert, Button}
-import scalafx.scene.effect.DropShadow
 import scalafx.scene.layout.{ColumnConstraints, GridPane, HBox, VBox}
 import scalafx.scene.paint.Color._
 import scalafx.scene.paint.{LinearGradient, Stops}
@@ -21,9 +18,9 @@ object GameWindow extends JFXApp {
 
   var myGame = new GameEngine
 
-  def resetGame = {myGame = new GameEngine; setGameStateToGrid}
+  def resetGame :Unit = myGame = new GameEngine; setGameStateToGrid
 
-  def closeGame = { stage.close }
+  def closeGame :Unit = stage.close
 
   var titleText = new Text {
     text = "TicTacToe "

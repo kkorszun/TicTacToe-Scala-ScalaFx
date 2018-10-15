@@ -1,13 +1,10 @@
 package kors
 
-import kors.GameEngine.GameState._
-
 class CpuWrapper(isTwoPlayers: Boolean) {
   val gameInstance = new GameEngine
 
-  def cpuPlayer = {
+  def cpuPlayer =
     (scala.util.Random.nextInt(3),scala.util.Random.nextInt(3))
-  }
 
   def nextMove(x:Int, y:Int) = {
      gameInstance.nextMove(x,y) match {
@@ -20,7 +17,6 @@ class CpuWrapper(isTwoPlayers: Boolean) {
       }
       case x => x
     }
-
   }
 
 
