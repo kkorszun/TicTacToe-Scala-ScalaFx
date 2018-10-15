@@ -18,7 +18,10 @@ object GameWindow extends JFXApp {
 
   var myGame = new GameEngine
 
-  def resetGame :Unit = myGame = new GameEngine; setGameStateToGrid
+  def resetGame :Unit = {
+    myGame = new GameEngine
+    setGameStateToGrid
+  }
 
   def closeGame :Unit = stage.close
 
