@@ -25,7 +25,6 @@ class GameEngineTest extends FlatSpec {
     assertResult(CrossS)(game.getGameBoard(2)(2))
   }
 
-
   it should "not change game board after doubling move" in{
     val game = new GameEngine
 
@@ -38,15 +37,54 @@ class GameEngineTest extends FlatSpec {
     assertResult(res1)(res2)
   }
 
-  it should "signalize if player win" in {
+  it should "signalize if move was not correct" in{
     val game = new GameEngine
+
+    game.nextMove(2,1)
+    val res1 = game.nextMove(2,1)
+
+    assert(!res1._2)
+  }
+
+  it should "signalize if player win" in {
+    var game = new GameEngine
 
     game.nextMove(0,0) //cross
     game.nextMove(1,1) //circle
     game.nextMove(0,1) // cross
     game.nextMove(1,2)//circle
-    val result = game.nextMove(0,2) //cross
+    val result1 = game.nextMove(0,2) //cross
 
-    assertResult((CrossV,true))(result)
+    assertResult(CrossV)(result1._1)
+
+    game = new GameEngine
+
+    game.nextMove(2,2) //cross
+    game.nextMove(0,0) //circle
+    game.nextMove(1,1) //cross
+    game.nextMove(0,1) // circle
+    game.nextMove(1,2)//cross
+    val result2 = game.nextMove(0,2) //circle
+
+    assertResult(CircleV)(result2._1)
   }
+
+  it should "signalize if draw" in {
+    val game = new GameEngine
+    game.nextMove(0,0) //cross
+    game.nextMove(0,1) //circle
+    game.nextMove(0,2) // cross
+
+    game.nextMove(1,0)//circle
+    game.nextMove(1,2) //cross
+    game.nextMove(1,1) //circle
+
+    game.nextMove(2,0) // cross
+    game.nextMove(2,2)//circle
+    val result = game.nextMove(2,1) // cross
+
+    assertResult(Draw)(result._1)
+
+  }
+
 }
