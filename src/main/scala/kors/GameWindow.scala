@@ -54,17 +54,17 @@ object GameWindow extends JFXApp {
   }
 
   def TwoDimZipper[A, B](x :Array[Array[A]],y :Array[Array[B]]) =
-    x.zip(y).map(_ match { case (x1,y1) => x1.zip(y1)})
+    x.zip(y).map({ case (x1,y1) => x1.zip(y1)})
 
   def setGameStateToGrid :Unit = {
     TwoDimZipper(myGame.getGameBoard, bttnArr).foreach(_.foreach(
-      _ match  {
-        case (x,y) => {
-          y.text.value_=  { this toStringSymbol x }
-          if(x == CrossS || x == CircleS) y.disable = true
-          else y.disable = false
+      { case (x, y) => {
+        y.text.value_= {
+          this toStringSymbol x
         }
-      }
+        if (x == CrossS || x == CircleS) y.disable = true
+        else y.disable = false
+      }}
     ))
   }
 
@@ -90,7 +90,6 @@ object GameWindow extends JFXApp {
       case CrossV => myAlert("╳ wins. ")
       case CircleV => myAlert("◯ wins. ")
     }
-
   }
 
   def getMyButton(c :Int,  r:Int) = new Button{
@@ -122,7 +121,6 @@ object GameWindow extends JFXApp {
       case (s1, j) => gridPane.add(s1,j,i)
     })
   })
-
 
   setGameStateToGrid
 
