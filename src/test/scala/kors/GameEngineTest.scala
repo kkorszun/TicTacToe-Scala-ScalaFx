@@ -13,7 +13,7 @@ class GameEngineTest extends FlatSpec {
     assert(game.getGameBoard.flatten.forall(_ == EmptyS))
   }
 
-  it should "return board with sign in given position after one move" in {
+  it should "return board with sign in given position after  move" in {
     val game = new GameEngine
     game.nextMove(0,0)
     assertResult(CrossS)(game.getGameBoard(0)(0))
@@ -35,6 +35,13 @@ class GameEngineTest extends FlatSpec {
     val res2 =  game.getGameBoard
 
     assertResult(res1)(res2)
+  }
+
+  it should "signalize if move was  correct" in {
+    val game = new GameEngine
+    val res1 = game.nextMove(2,1)
+
+    assert(res1._2)
   }
 
   it should "signalize if move was not correct" in{
