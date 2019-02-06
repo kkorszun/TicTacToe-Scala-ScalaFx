@@ -1,8 +1,8 @@
 package kors
 
 import javafx.scene.control.{Label, TitledPane}
-import kors.GameEngine.GameState._
-import kors.GameEngine.GameSymbol._
+import kors.GameBoard.{Draw, GameState, InProgress, Victory}
+import kors.GameBoard.GameSymbol._
 import scalafx.application.JFXApp
 import scalafx.scene.Scene
 import scalafx.scene.control.Alert.AlertType
@@ -16,14 +16,14 @@ import scalafx.scene.text.Text
 
 object GameWindow extends JFXApp {
 
-  var myGame = new GameEngine
+  var myGame = GameBoard.newGame()
 
-  def resetGame :Unit = {
-    myGame = new GameEngine
+  def resetGame: Unit = {
+    myGame = GameBoard.newGame()
     setGameStateToGrid
   }
 
-  def closeGame :Unit = stage.close
+  def closeGame: Unit = stage.close
 
   var titleText = new Text {
     text = "TicTacToe "
@@ -34,46 +34,33 @@ object GameWindow extends JFXApp {
     )
   }
 
-  var footerWithBtts = new HBox{
+  var footerWithBtts = new HBox {
     children = Seq(
-      new Button{
+      new Button {
         text = "new game"
-        onAction = {_ => resetGame}
+        onAction = { _ => resetGame }
       },
-      new Button{
-       text =  "exit"
-        onAction = {_ => closeGame}
+      new Button {
+        text = "exit"
+        onAction = { _ => closeGame }
       }
     )
   }
 
   def toStringSymbol: GameSymbol => String = {
-    case EmptyS   =>  "  "
-    case CrossS   =>  "╳"
-    case CircleS  =>  "◯"
+    case CrossS => "╳"
+    case CircleS => "◯"
   }
 
-  def TwoDimZipper[A, B](x :Array[Array[A]],y :Array[Array[B]]) =
-    x.zip(y).map({ case (x1,y1) => x1.zip(y1)})
 
-  def setGameStateToGrid :Unit = {
-    TwoDimZipper(myGame.getGameBoard, bttnArr).foreach(_.foreach(
-      { case (x, y) => {
-        y.text.value_= {
-          this toStringSymbol x
-        }
-        if (x == CrossS || x == CircleS) y.disable = true
-        else y.disable = false
-      }}
-    ))
-  }
+  def setGameStateToGrid: Unit = ???
 
-  def showAlert(x :GameState) = {
+  def showAlert(x: GameState) = {
 
-    def myAlert(myMessage :String) = new Alert(AlertType.Confirmation) {
+    def myAlert(myMessage: String) = new Alert(AlertType.Confirmation) {
       initOwner(stage)
       title = "TicTacToe"
-      contentText = myMessage+"New game?"
+      contentText = myMessage + "New game?"
 
       //onHiding = { _ => {stage.close()}}
     }.showAndWait() match {
@@ -87,38 +74,43 @@ object GameWindow extends JFXApp {
 
     x match {
       case Draw => myAlert("draw.")
-      case CrossV => myAlert("╳ wins. ")
-      case CircleV => myAlert("◯ wins. ")
+      case Victory(CrossS) => myAlert("╳ wins. ")
+      case Victory(CircleS) => myAlert("◯ wins. ")
     }
   }
 
-  def getMyButton(c :Int,  r:Int) = new Button{
+  def getMyButton(c: Int, r: Int) = new Button {
     text = " "
     onAction = { _ => {
-      val result = myGame.nextMove(c,r)
-      setGameStateToGrid
-      if(result._1 != NonV) {
-        bttnArr.flatten.foreach(_.disable = true)
-        showAlert(result._1)
+      val result = myGame.setField(c, r)
+      if (result.isDefined) {
+        setGameStateToGrid
+        if (result.get.state != InProgress) {
+          bttnArr.flatten.foreach(_.disable = true)
+          showAlert(result.get.state)
+        }
       }
-    }}
+    }
+    }
   }
 
-  def getButtonsArr = {
+  /*def getButtonsArr = {
     myGame.getGameBoard.zipWithIndex.map({
-      case (s,j) => s.zipWithIndex.map({
-        case(_, i) => getMyButton(j,i)
+      case (s, j) => s.zipWithIndex.map({
+        case (_, i) => getMyButton(j, i)
       })
     })
-  }
+  }*/
+
+  def getButtonsArr: Array[Array[Button]] = ???
 
   var gridPane = new GridPane()
   gridPane.setGridLinesVisible(true)
 
   val bttnArr: Array[Array[Button]] = getButtonsArr
   bttnArr.zipWithIndex.foreach({
-    case (s,i) => s.zipWithIndex.foreach({
-      case (s1, j) => gridPane.add(s1,j,i)
+    case (s, i) => s.zipWithIndex.foreach({
+      case (s1, j) => gridPane.add(s1, j, i)
     })
   })
 
@@ -129,7 +121,7 @@ object GameWindow extends JFXApp {
     title.value = "TicTacToe"
     scene = new Scene {
       fill = Black
-      content = new VBox{
+      content = new VBox {
         children = Seq(
           new HBox(titleText),
           gridPane,

@@ -38,8 +38,8 @@ class GameEngine {
     def checkCols(mgb : List[List[GameSymbol]]) = checkLine(boardRotate(mgb))
 
     def checkDiagonals (mgb: List[List[GameSymbol]]) = checkLine(List(
-      List(mgb(0)(0),mgb(1)(1), mgb(2)(2)),
-      List(mgb(2)(0),mgb(1)(1), mgb(0)(2)),
+      List(mgb.head.head,mgb(1)(1), mgb(2)(2)),
+      List(mgb(2).head,mgb(1)(1), mgb.head(2)),
       List(EmptyS,EmptyS,EmptyS)
     ))
 
@@ -80,14 +80,15 @@ class GameEngine {
 }
 
 object GameEngine{
-  object GameState extends Enumeration {
+ /* object GameState extends Enumeration {
     type GameState = Value
     val CrossV, CircleV, NonV, Draw = Value
   }
+  */
 
-  object GameSymbol extends Enumeration {
+  /*object GameSymbol extends Enumeration {
     type GameSymbol = Value
     val EmptyS, CircleS, CrossS = Value
-  }
+  }*/
 
 }
